@@ -5,6 +5,7 @@ const url = require('url');
 const Router = require('router');
 const bodyParser = require('body-parser');
 const fs = require('fs');
+const cors = require('cors');
 // State holding variables
 let goals = [];
 let user = {};
@@ -14,6 +15,7 @@ let categories = [];
 // Setup router
 let myRouter = Router();
 myRouter.use(bodyParser.json());
+myRouter.use(cors());
 
 // This function is a bit simpler...
 http.createServer(function (request, response) {
@@ -34,16 +36,28 @@ http.createServer(function (request, response) {
 myRouter.get('/v1/goals', function(request,response) {
   // Get our query params from the query string
   const queryParams = queryString.parse(url.parse(request.url).query)
-
   // TODO: Do something with the query params
 
   // Return all our current goal definitions (for now)
   return response.end(JSON.stringify(goals));
 });
 
+myRouter.get('/v1/user/:userId', (request, response) => {
+  const selectedUser = users.find(user => {
+    return user.id === request.params.userId
+  })
+
+  return response.end(JSON.stringify(selectedUser))
+})
+
+myRouter.get('/v1/me', (request, response) => {
+  return response.end(JSON.stringify(user))
+})
+
 // See how i'm not having to build up the raw data in the body... body parser just gives me the whole thing as an object.
 // See how the router automatically handled the path value and extracted the value for me to use?  How nice!
 myRouter.post('/v1/me/goals/:goalId/accept', function(request,response) {
+  console.log("Post")
   // Find goal from id in url in list of goals
   let goal = goals.find((goal)=> {
     return goal.id == request.params.goalId
@@ -51,7 +65,7 @@ myRouter.post('/v1/me/goals/:goalId/accept', function(request,response) {
   // Add it to our logged in user's accepted goals
   user.acceptedGoals.push(goal); 
   // No response needed other than a 200 success
-  return response.end();
+  return response.end("Hello World");
 });
 
 myRouter.post('/v1/me/goals/:goalId/challenge/:userId', function(request,response) {

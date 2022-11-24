@@ -9,6 +9,7 @@ let categories = [];
 http.createServer(function (request, response) {
   const { headers, method, url } = request;
   let body = [];
+  // console.log(request);
   request.on('error', (err) => {
     // Log any errors for now to the console to debug
     console.error(err);
@@ -28,6 +29,7 @@ http.createServer(function (request, response) {
     handleApiRequest(body,request,response);
   });
 }).listen(3001, ()=> {
+  console.log(`Server is listening on localhost:${3001}`)
   // Load dummy data into server memory for serving
   goals = JSON.parse(fs.readFileSync("goals.json","utf-8"));
   
